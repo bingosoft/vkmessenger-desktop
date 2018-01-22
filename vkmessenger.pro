@@ -74,24 +74,26 @@ OTHER_FILES += \
     qml/controls/Button.qml \
     qml/controls/ScaleButton.qml \
     qml/controls/SmoothImage.qml \
-    \
-    qml/contacts/ContactsHeader.qml \
-    qml/contacts/Contacts.qml \
-    qml/contacts/ContactsDelegate.qml \
-    \
-    qml/dialogs/Dialogs.qml \
-    qml/dialogs/DialogsHeader.qml \
-    qml/dialogs/DialogEdit.qml \
-    qml/dialogs/Dialog.qml \
     qml/controls/PageStack.qml \
-    qml/dialogs/MessageDelegate.qml \
-    qml/js/forwardMessages.js \
-    qml/js/smiles.js \
     qml/controls/ContextMenu.qml \
     qml/controls/Panel.qml \
     qml/controls/ListViewDelegate.qml \
     qml/controls/Bullet.qml \
+\
+    qml/contacts/ContactsHeader.qml \
+    qml/contacts/Contacts.qml \
+    qml/contacts/ContactsDelegate.qml \
     qml/contacts/StatusPanel.qml \
+\
+    qml/dialogs/Dialogs.qml \
+    qml/dialogs/DialogsHeader.qml \
+    qml/dialogs/DialogEdit.qml \
+    qml/dialogs/Dialog.qml \
+    qml/dialogs/MessageDelegate.qml \
     qml/dialogs/SmilesPanel.qml \
-    qml/dialogs/PhotoAttachment.qml
+    qml/dialogs/PhotoAttachment.qml \
+    qml/dialogs/ForwardMessageDelegate.qml \
+\
+    qml/js/forwardMessages.js \
+    qml/js/smiles.js \
 

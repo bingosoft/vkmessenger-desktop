@@ -25,7 +25,6 @@
         <file>qml/controls/ScaleButton.qml</file>
         <file>qml/js/smiles.js</file>
         <file>qml/images/smile.png</file>
-        <file>qml/Panel.qml</file>
         <file>qml/images/shadow.png</file>
         <file>qml/controls/ListViewDelegate.qml</file>
         <file>qml/controls/ContextMenu.qml</file>
