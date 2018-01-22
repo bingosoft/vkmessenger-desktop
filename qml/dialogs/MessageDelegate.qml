@@ -41,7 +41,7 @@ Item {
 				anchors.fill: parent;
 
 				onDoubleClicked: {
-					context.open("https://vk.com/id" + usr.uid);			
+					context.open("https://vk.com/id" + usr.uid);
 				}
 			}
         }
@@ -170,6 +170,7 @@ Item {
 				Repeater {
 					model: photosModel;
 					delegate: PhotoAttachment {
+						borderWidth: model.needBorder ? 1 : 0;
                         source: model.source;
                         bigSource: model.bigSource;
 						sourceWidth: model.width;
@@ -247,7 +248,12 @@ Item {
 
                 if (attachment.type == "photo") {
                     var p = attachment.photo;
-                    photosModel.append({source: p.src_big, bigSource: p.src_xbig ? p.src_xbig : p.src_big, width: p.width, height: p.height, rowHeight: 0});
+                    photosModel.append({source: p.src_big, bigSource: p.src_xbig ? p.src_xbig : p.src_big, width: p.width, height: p.height, rowHeight: 0, needBorder: 1});
+                }
+
+                if (attachment.type == "sticker") {
+                    var p = attachment.sticker;
+                    photosModel.append({source: p.photo_256, bigSource: p.photo_512, width: 256, height: 256, rowHeight: 0, needBorder: 0});
                 }
             }
 

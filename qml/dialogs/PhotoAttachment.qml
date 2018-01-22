@@ -7,12 +7,9 @@ Item {
 	property int sourceWidth;
 	property int sourceHeight;
     property real rowHeight;
+    property int borderWidth;
     height: rowHeight > 0 ? rowHeight : 150;
     width: ratio * height;
-
-    onRowHeightChanged: {
-        console.log("row height " + rowHeight);
-    }
 
 	Image {
 		id: image;
@@ -33,7 +30,7 @@ Item {
 	Rectangle {
 		anchors.fill: parent;
         color: image.status == Image.Ready ? "#00999999" : "#999";
-		border.width: 1;
+		border.width: parent.borderWidth;
         border.color: image.status == Image.Ready ? "#66666666" : "#666";
 
 		Behavior on color {
