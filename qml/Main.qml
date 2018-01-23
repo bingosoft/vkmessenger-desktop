@@ -22,7 +22,7 @@ FocusScope {
                 console.log("has token");
                 var r = new RegExp("#access_token=([0-9a-f]+)");
                 var res = r.exec(s);
-                options.accessToken = res[1];
+                settings.setValue("accessToken", res[1]);
                 statusPanel.currentStatus = statusPanel.statusOnline;
             }
         }
