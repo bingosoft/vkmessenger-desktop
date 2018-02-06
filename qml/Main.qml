@@ -147,12 +147,13 @@ FocusScope {
         console.log("user received " + data);
         var res = JSON.parse(data).response;
         console.log("setting curr user");
-        header.user = usersManager.getUser(res[0].uid);
-        context.currentUser = res[0].uid;
+        header.user = usersManager.getUser(res[0].id);
+        context.currentUser = res[0].id;
     }
 
     function onFriendsReceived(data) {
-        var res = JSON.parse(data).response;
+		console.log(data);
+        var res = JSON.parse(data).response.items;
         console.log("friends received " + res.length);
         contacts.load(res);
     }

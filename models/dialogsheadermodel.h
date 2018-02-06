@@ -37,7 +37,7 @@ public:
 
     Q_INVOKABLE void clear() { beginResetModel(); items.clear(); endResetModel(); }
     Q_INVOKABLE void appendChat(int chatId, const QString &topic);
-    Q_INVOKABLE void appendUser(int uid);
+    Q_INVOKABLE void appendUser(int user_id);
     Q_INVOKABLE void remove(int i);
     Q_INVOKABLE void itemChanged(int i) { dataChanged(index(i), index(i)); }
     Q_INVOKABLE int indexOf(int id);

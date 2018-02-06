@@ -20,7 +20,7 @@ class UserItem : public QObject
 
     friend class UsersManager;
 
-    DECLARE_PROPERTY(int, uid)
+    DECLARE_PROPERTY(int, user_id)
     DECLARE_PROPERTY(QString, name)
     DECLARE_PROPERTY(QString, status)
     DECLARE_PROPERTY(bool, isFriend)
@@ -32,7 +32,7 @@ class UserItem : public QObject
     DECLARE_PROPERTY(int, unreadMessages)
     DECLARE_PROPERTY(QDateTime, lastSeen)
 
-    Q_PROPERTY(int uid READ get_uid WRITE set_uid NOTIFY dataChanged)
+    Q_PROPERTY(int user_id READ get_user_id WRITE set_user_id NOTIFY dataChanged)
     Q_PROPERTY(QString name READ get_name WRITE set_name NOTIFY dataChanged)
     Q_PROPERTY(QString status READ get_status WRITE set_status NOTIFY dataChanged)
     Q_PROPERTY(bool isFriend READ get_isFriend WRITE set_isFriend NOTIFY dataChanged)
@@ -47,8 +47,8 @@ class UserItem : public QObject
     volatile bool isLoadingAvatar;
 
 public:
-	UserItem(int uid = 0) :
-		uid(uid),
+	UserItem(int user_id = 0) :
+		user_id(user_id),
 		online(),
         loaded(),
 		selected(),

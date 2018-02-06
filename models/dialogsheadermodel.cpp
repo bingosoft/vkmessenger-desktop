@@ -21,11 +21,11 @@ QHash<int, QByteArray> DialogsHeaderModel::roleNames() const
     return roles;
 }
 
-void DialogsHeaderModel::appendUser(int uid)
+void DialogsHeaderModel::appendUser(int user_id)
 {
     beginInsertRows(QModelIndex(), items.size(), items.size());
-	UserItem *user = UsersManager::Get()->getUser(uid);
-	qDebug() << "appendUser " << uid << " name " << user->get_name();
+	UserItem *user = UsersManager::Get()->getUser(user_id);
+	qDebug() << "appendUser " << user_id << " name " << user->get_name();
     items.append(user);
     connect(user, SIGNAL(dataChanged()), SLOT(itemDataChanged()));
     endInsertRows();
@@ -74,7 +74,7 @@ QVariant DialogsHeaderModel::data(const QModelIndex &index, int role) const
     if (user) {
 		switch ((Roles)role) {
 		case Id:
-			return user->get_uid();
+			return user->get_user_id();
 		case Name:
 			return user->get_name();
 		case Online:
@@ -118,7 +118,7 @@ int DialogsHeaderModel::indexOf(int id)
 {
     for (int i = 0; i < items.count(); ++i) {
         UserItem *user = dynamic_cast<UserItem*>(items[i]);
-        if (user && user->get_uid() == id) {
+        if (user && user->get_user_id() == id) {
 			qDebug() << "found user at index " << i;
             return i;
 		}

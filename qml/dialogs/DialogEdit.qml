@@ -134,7 +134,7 @@ FocusScope {
                     else if (event.modifiers & Qt.ControlModifier && event.key == Qt.Key_W)
                         dialogsItem.closeDialog();
                     else if (event.key == Qt.Key_Space && text.length == 0 && hasUnreadMessages) {
-                         vkApi.makeQuery("messages.markAsRead", {user_id: dialogId, start_mid: 0});
+                         vkApi.makeQuery("messages.markAsRead", {user_id: dialogId, start_message_id: 0});
                          hasUnreadMessages = false;
 					} else
                         return;
@@ -158,7 +158,7 @@ FocusScope {
                     }
 
                     if (hasUnreadMessages) {
-                         vkApi.makeQuery("messages.markAsRead", {user_id: dialogId, start_mid: 0});
+                         vkApi.makeQuery("messages.markAsRead", {user_id: dialogId, start_message_id: 0});
                          hasUnreadMessages = false;
                     }
                  }

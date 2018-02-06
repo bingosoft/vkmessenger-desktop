@@ -90,7 +90,7 @@ FocusScope {
 		delegate: SmoothImage {
 			height: 50;
 			width: 50;
-			source: model.avatarLoaded && model.avatar != "http://vk.com/images/camera_c.gif" ? ("image://round/" + model.uid + "|" + model.avatar) : "../images/unknown.png";
+			source: model.avatarLoaded && model.avatar != "http://vk.com/images/camera_c.gif" ? ("image://round/" + model.user_id + "|" + model.avatar) : "../images/unknown.png";
 			opacity: model.online ? 1 : model.selected ? 0.8 : 0.6;
 
 			Behavior on opacity {
@@ -231,7 +231,7 @@ FocusScope {
     function append(user, message, checkExisting) {
         if (checkExisting) {
             for (var i = 0; i < messagesModel.count; ++i)
-                if (messagesModel.get(i).message.mid == message.mid)
+                if (messagesModel.get(i).message.id == message.id)
                     return;
         }
         insert(messagesModel.count, user, message);
@@ -246,7 +246,7 @@ FocusScope {
 
     function insert(index, user, message) {
 		for (var i = 0; i < messagesModel.count; ++i)
-			if (messagesModel.get(i).message.mid == message.mid)
+			if (messagesModel.get(i).message.id == message.id)
 				return;
 
         printsMessage = false;
@@ -263,7 +263,7 @@ FocusScope {
 
     function onHistoryReceived(data, scrollToEnd) {
 		console.log(data);
-        var resp = JSON.parse(data).response;
+        var resp = JSON.parse(data).response.items;
         if (!scrollToEnd) {
 			var previousHeight = listView.contentHeight;
 			var previousCountentY = listView.contentY;
@@ -283,14 +283,14 @@ FocusScope {
         var forwardedMessages = "";
         if (forwardMessages) {
             for (var i = 0; i < ForwardMessages.forwardMessages.length; ++i)
-                forwardedMessages += (forwardedMessages == "" ? "" : ",") + ForwardMessages.forwardMessages[i].mid;
+                forwardedMessages += (forwardedMessages == "" ? "" : ",") + ForwardMessages.forwardMessages[i].id;
             ForwardMessages.clearSelectedMessages();
         }
         if (dialogId < 2000000000) {
-			vkApi.makeQuery("messages.send", {user_id: dialogId, message: text, guid: date.getTime(), forward_messages: forwardedMessages});
+			vkApi.makeQuery("messages.send", {user_id: dialogId, message: text, guser_id: date.getTime(), forward_messages: forwardedMessages});
         } else {
             console.log("sending message to a chat");
-			vkApi.makeQuery("messages.send", {chat_id: dialogId - 2000000000, message: text, guid: date.getTime(), forward_messages: forwardedMessages});
+			vkApi.makeQuery("messages.send", {chat_id: dialogId - 2000000000, message: text, guser_id: date.getTime(), forward_messages: forwardedMessages});
         }
     }
 
@@ -313,9 +313,9 @@ FocusScope {
         return -1;
     }
 
-    function setMessageRead(mid, read) {
+    function setMessageRead(id, read) {
         for (var i = messagesModel.count - 1; i >= 0; --i) {
-            if (messagesModel.get(i).message.mid == mid) {
+            if (messagesModel.get(i).message.id == id) {
                 messagesModel.setProperty(i, "read", read);
                 break;
             }
@@ -333,8 +333,8 @@ FocusScope {
         var i = getMessageAtMouse();
 		var message = messagesModel.get(i);
 		messagesModel.setProperty(i, "selected", !message.selected);
-        ForwardMessages.toggleSelectedMessage(message.message.mid, dialogId);
-		console.log("selecting message " + message.message.mid);
+        ForwardMessages.toggleSelectedMessage(message.message.id, dialogId);
+		console.log("selecting message " + message.message.id);
     }
 
     function convertToRu() {
@@ -377,15 +377,15 @@ FocusScope {
         console.log("loading hist");
         var messagesCount = 100;
         if (messagesModel.count > 0)
-            vkApi.makeQuery("messages.getHistory", {user_id: dialogId, count: messagesCount, offset: -(messagesCount + 1), start_message_id: messagesModel.get(0).message.mid}).completed.connect(function(data) { onHistoryReceived(data, false); });
+            vkApi.makeQuery("messages.getHistory", {user_id: dialogId, count: messagesCount, offset: -(messagesCount + 1), start_message_id: messagesModel.get(0).message.id}).completed.connect(function(data) { onHistoryReceived(data, false); });
     }
 
-    function updateUser(uid) {
+    function updateUser(user_id) {
         for (var i = 0; i < chatUsersModel.count; ++i) {
             var item = chatUsersModel.get(i);
-            if (item.uid === uid) {
+            if (item.user_id === user_id) {
 				console.log("updating a user in chat");
-                var user = usersManager.getUser(uid);
+                var user = usersManager.getUser(user_id);
                 chatUsersModel.set(i, user);
             }
         }

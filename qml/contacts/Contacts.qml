@@ -83,7 +83,7 @@ Item {
         var user = contactsModel.get(listView.currentIndex);
 
         if (user) {
-            vkApi.makeQuery("friends.delete", {user_id: user.uid});
+            vkApi.makeQuery("friends.delete", {user_id: user.user_id});
             contactsModel.remove(listView.currentIndex);
         }
     }
@@ -92,6 +92,6 @@ Item {
         var user = contactsModel.get(listView.currentIndex);
 
         if (user)
-            context.open("http://vk.com/id" + user.uid);
+            context.open("http://vk.com/id" + user.user_id);
     }
 }

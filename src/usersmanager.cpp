@@ -11,23 +11,23 @@ UsersManager::UsersManager(QObject *parent) :
 	updateNotFriendsTimerId = startTimer(10000);
 }
 
-UserItem* UsersManager::getUser(int uid)
+UserItem* UsersManager::getUser(int user_id)
 {
-    if (uid == 0) {
+    if (user_id == 0) {
 		qDebug() << "getting user id0";
         return 0;
     }
     QMutexLocker l(&m);
-    UsersMap::ConstIterator it = users.find(uid);
+    UsersMap::ConstIterator it = users.find(user_id);
 
     if (it == users.end()) {
-        users[uid] = UserItemPtr(new UserItem(uid));
-		connect(users[uid].data(), SIGNAL(dataChanged()), SLOT(onUserDataChanged()));
+        users[user_id] = UserItemPtr(new UserItem(user_id));
+		connect(users[user_id].data(), SIGNAL(dataChanged()), SLOT(onUserDataChanged()));
         if (userLoadTimerId == 0)
             userLoadTimerId = startTimer(50);
     }
 
-    return users[uid].data();
+    return users[user_id].data();
 }
 
 ChatItem* UsersManager::getChat(int chatId)
@@ -58,19 +58,19 @@ void UsersManager::loadUsers()
 	bool canKillTimer = false;
 
 	if (!usersResponse) {
-		QString uids;
+		QString user_ids;
 
 		foreach(UserItemPtr user, users) {
 			if (!user->loaded)
-				uids += (uids.isEmpty() ? "" : ",") + QString().setNum(user->uid);
+				user_ids += (user_ids.isEmpty() ? "" : ",") + QString().setNum(user->user_id);
 		}
 
-        if (!uids.isEmpty()) {
+        if (!user_ids.isEmpty()) {
 			QVariantMap params;
-			params["uids"] = uids;
+			params["user_ids"] = user_ids;
 			params["fields"] = "photo_50,status,online,screen_name,last_seen";
 
-			qDebug() << "getting users " << uids;
+			qDebug() << "getting users " << user_ids;
 			usersResponse = VkApi::Get()->makeQuery("users.get", params);
 			connect(usersResponse, SIGNAL(completed(QString)), SLOT(usersLoaded(QString)));
         } else {
@@ -108,16 +108,16 @@ void UsersManager::loadUsers()
 
 void UsersManager::loadUsersNotInFriends()
 {
-	QString uids;
+	QString user_ids;
 
 	foreach(UserItemPtr user, users) {
 		if (!user->isFriend)
-			uids += (uids.isEmpty() ? "" : ",") + QString().setNum(user->uid);
+			user_ids += (user_ids.isEmpty() ? "" : ",") + QString().setNum(user->user_id);
 	}
 
-    if (!uids.isEmpty()) {
+    if (!user_ids.isEmpty()) {
 		QVariantMap params;
-		params["uids"] = uids;
+		params["user_ids"] = user_ids;
 		params["fields"] = "online,last_seen";
 
 		VkApiResponse *resp = VkApi::Get()->makeQuery("users.get", params);
@@ -134,8 +134,8 @@ void UsersManager::loadAvatars()
 		if (user->loaded && !user->avatarLoaded && !user->isLoadingAvatar) {
 			QNetworkReply *reply = manager->get(QNetworkRequest(QUrl(user->avatar)));
 			user->isLoadingAvatar = true;
-			qDebug() << "loading avatar " << user->avatar << " for id" << user->uid;
-			reply->setProperty("uid", user->uid);
+			qDebug() << "loading avatar " << user->avatar << " for id" << user->user_id;
+			reply->setProperty("user_id", user->user_id);
 			connect(reply, SIGNAL(finished()), SLOT(avatarReceived()), Qt::QueuedConnection);
 			activeThreads++;
 
@@ -165,7 +165,7 @@ void UsersManager::avatarReceived()
     QNetworkReply *reply = dynamic_cast<QNetworkReply *>(sender());
 
     if (reply->error() == QNetworkReply::NoError) {
-		int id = !reply->property("uid").isNull() ? reply->property("uid").toInt() : reply->property("chatId").toInt();
+		int id = !reply->property("user_id").isNull() ? reply->property("user_id").toInt() : reply->property("chatId").toInt();
 
 		QImage image = QImage::fromData(reply->readAll());
 		QImage out(50, 50, QImage::Format_ARGB32);
@@ -184,14 +184,14 @@ void UsersManager::avatarReceived()
 		painter.drawRoundedRect(QRect(0, 0, 50, 50), 8, 8);
 		QFile::remove(QString("%1/id%2_*").arg(RoundImageProvider::getCacheDir()).arg(id));
 
-		if (!reply->property("uid").isNull()) {
-			UserItem *user = getUser(reply->property("uid").toInt());
-			out.save(RoundImageProvider::getFileName(user->uid, user->avatar), "PNG");
+		if (!reply->property("user_id").isNull()) {
+			UserItem *user = getUser(reply->property("user_id").toInt());
+			out.save(RoundImageProvider::getFileName(user->user_id, user->avatar), "PNG");
 			user->isLoadingAvatar = false;
 			user->avatarLoaded = true;
 			user->dataChanged();
-			userDataChanged(user->uid);
-			qDebug() << "received avatar for " << user->uid;
+			userDataChanged(user->user_id);
+			qDebug() << "received avatar for " << user->user_id;
 		}
 
 		if (!reply->property("chatId").isNull()) {
@@ -226,21 +226,21 @@ void UsersManager::usersLoaded(QString data)
     while (it.hasNext()) {
         it.next();
         QScriptValue v = it.value();
-        int uid = v.property("uid").toInteger();
+        int user_id = v.property("id").toInteger();
 
-        if (uid == 0)
+        if (user_id == 0)
             continue;
 
-        UserItemPtr user = users[uid];
+        UserItemPtr user = users[user_id];
 
         user->name = v.property("first_name").toString() + " " + v.property("last_name").toString();
         user->avatar = v.property("photo_50").toString();
         if (user->avatar.isEmpty())
-            qDebug() << "EMPTY AVATAR FOR " << user->uid;
+            qDebug() << "EMPTY AVATAR FOR " << user->user_id;
         user->online = v.property("online").toBool();
         user->status = v.property("status").toString();
         user->lastSeen = QDateTime::fromTime_t(v.property("last_seen").property("time").toInteger());
-        user->avatarLoaded = QFile(RoundImageProvider::getFileName(user->uid, user->avatar)).exists();
+        user->avatarLoaded = QFile(RoundImageProvider::getFileName(user->user_id, user->avatar)).exists();
         user->loaded = true;
         user->dataChanged();
     }
@@ -268,7 +268,7 @@ void UsersManager::chatsLoaded(QString data)
     while (it.hasNext()) {
         it.next();
         QScriptValue v = it.value();
-        int chatId = v.property("chat_id").toInteger();
+        int chatId = v.property("id").toInteger();
 
         if (chatId == 0)
             continue;
@@ -286,8 +286,8 @@ void UsersManager::chatsLoaded(QString data)
         QVariantList users = v.property("users").toVariant().toList();
 
         foreach (QVariant v, users) {
-			chat->users.append(v.toMap()["uid"].toInt());
-            qDebug() << "chat user uid " << v.toMap()["uid"].toInt();
+			chat->users.append(v.toMap()["id"].toInt());
+            qDebug() << "chat user user_id " << v.toMap()["id"].toInt();
 		}
 
         chatDataChanged(chat->id);
@@ -313,12 +313,12 @@ void UsersManager::usersNotInFriendsLoaded(QString data)
     while (it.hasNext()) {
         it.next();
         QScriptValue v = it.value();
-        int uid = v.property("uid").toInteger();
+        int user_id = v.property("user_id").toInteger();
 
-        if (uid == 0)
+        if (user_id == 0)
             continue;
 
-        UserItemPtr user = users[uid];
+        UserItemPtr user = users[user_id];
         if (v.property("online").toBool() != user->online) {
 			user->online = v.property("online").toBool();
 			user->lastSeen = QDateTime::fromTime_t(v.property("last_seen").property("time").toInteger());
@@ -331,7 +331,7 @@ void UsersManager::onUserDataChanged()
 {
 	foreach(UserItemPtr user, users) {
         if (user.data() == sender()) {
-            userDataChanged(user->uid);
+            userDataChanged(user->user_id);
             return;
         }
 	}

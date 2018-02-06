@@ -33,7 +33,7 @@ Item {
             anchors.left: parent.left;
             anchors.top: parent.top;
             anchors.margins: 7;
-            source: usr.avatarLoaded && usr.avatar != "http://vk.com/images/camera_c.gif" ? ("image://round/" + usr.uid + "|" + usr.avatar) : "../images/unknown.png";
+            source: usr.avatarLoaded && usr.avatar != "http://vk.com/images/camera_c.gif" ? ("image://round/" + usr.user_id + "|" + usr.avatar) : "../images/unknown.png";
             width: 40;
             height: 40;
 
@@ -41,7 +41,7 @@ Item {
 				anchors.fill: parent;
 
 				onDoubleClicked: {
-					context.open("https://vk.com/id" + usr.uid);
+					context.open("https://vk.com/id" + usr.user_id);
 				}
 			}
         }
@@ -59,7 +59,7 @@ Item {
 
 //            onClicked: {
 //                if (model.message.out == 0)
-//                    context.open("https://vk.com/id" + usr.uid);
+//                    context.open("https://vk.com/id" + usr.user_id);
 //            }
         }
 
@@ -239,7 +239,7 @@ Item {
         if (message.fwd_messages && message.fwd_messages.length) {
 			console.log("fwd messages received");
 			for (var i = 0; i < message.fwd_messages.length; ++i)
-				fwdModel.append({message: message.fwd_messages[i], user: usersManager.getUser(message.fwd_messages[i].uid)});
+				fwdModel.append({message: message.fwd_messages[i], user: usersManager.getUser(message.fwd_messages[i].user_id)});
         } else if (message.attachments && message.attachments.length) {
 			console.log("process attachments");
             for (var i = 0; i < message.attachments.length; ++i) {
@@ -248,7 +248,7 @@ Item {
 
                 if (attachment.type == "photo") {
                     var p = attachment.photo;
-                    photosModel.append({source: p.src_big, bigSource: p.src_xbig ? p.src_xbig : p.src_big, width: p.width, height: p.height, rowHeight: 0, needBorder: 1});
+                    photosModel.append({source: p.photo_1280, bigSource: p.photo_2560, width: p.width, height: p.height, rowHeight: 0, needBorder: 1});
                 }
 
                 if (attachment.type == "sticker") {
@@ -307,13 +307,13 @@ Item {
     }
 
     Component.onCompleted: {
-        usr = message.out == 1 ? usersManager.getUser(context.currentUser) : usersManager.getUser(message.uid);
+        usr = message.out == 1 ? usersManager.getUser(context.currentUser) : usersManager.getUser(message.user_id);
         opacityItem.opacity = 1;
 
         //console.log(JSON.stringify(message));
 
         if (typeof message.attachments == "boolean" && message.attachments) {
-			vkApi.makeQuery("messages.getById", {message_ids: model.message.mid}).completed.connect(onMessageReceived);
+			vkApi.makeQuery("messages.getById", {message_ids: model.message.id}).completed.connect(onMessageReceived);
         } else if (message.attachments || message.fwd_messages) {
             processAttachments();
         }

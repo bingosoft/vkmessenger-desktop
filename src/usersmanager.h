@@ -32,7 +32,7 @@ public:
     explicit UsersManager(QObject *parent = 0);
 
     static UsersManager* Get() { static UsersManager instance; return &instance; }
-    Q_INVOKABLE UserItem* getUser(int uid);
+    Q_INVOKABLE UserItem* getUser(int user_id);
     Q_INVOKABLE ChatItem* getChat(int chatId);
 
 private:
@@ -41,7 +41,7 @@ private:
 	void loadUsersNotInFriends();
 
 signals:
-    void userDataChanged(int uid);
+    void userDataChanged(int user_id);
     void chatDataChanged(int chatId);
 
 private slots:

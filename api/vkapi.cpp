@@ -24,6 +24,8 @@ VkApiResponse* VkApi::makeQuery(const QString &method, const QVariantMap &params
         s += QString("%1=%2&").arg(i.key()).arg(encodedData);
     }
 
+    s += "v=5.64&";
+
 	QUrl url(QString("https://api.vk.com/method/%1").arg(method));
 	request.setUrl(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");

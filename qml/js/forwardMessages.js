@@ -17,21 +17,21 @@ function clearSelectedMessages() {
     notifyObservers();
 }
 
-function findMessage(mid) {
+function findMessage(id) {
     for (var i = 0; i < forwardMessages.length; ++i)
-        if (forwardMessages[i].mid == mid)
+        if (forwardMessages[i].id == id)
             return i;
     return -1;
 }
 
-function toggleSelectedMessage(mid, owner) {
-    var i = findMessage(mid);
-    
+function toggleSelectedMessage(id, owner) {
+    var i = findMessage(id);
+
     if (i == -1)
-        forwardMessages.push({mid: mid, owner: owner});
+        forwardMessages.push({id: id, owner: owner});
     else
         forwardMessages.splice(i, 1);
-    
+
     notifyObservers();
 }
 
@@ -45,14 +45,14 @@ function removeObserver(obj, owner) {
         if (observers[i].obj == obj) {
             console.log("observer unregistered");
             observers.splice(i, 1);
-            
+
             for (var j = 0; j < forwardMessages.length;) {
                 if (forwardMessages[j].owner == owner)
                     forwardMessages.splice(j, 1);
                 else
                     ++j;
             }
-            
+
             notifyObservers();
             return;
         }

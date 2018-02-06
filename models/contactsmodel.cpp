@@ -11,7 +11,7 @@ ContactsModel::ContactsModel(QObject *parent) :
 QHash<int, QByteArray> ContactsModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[Id] = "uid";
+    roles[Id] = "user_id";
     roles[Name] = "name";
     roles[Status] = "status";
     roles[Online] = "online";
@@ -50,7 +50,7 @@ QVariant ContactsModel::data(const QModelIndex &index, int role) const
 
     switch ((Roles)role) {
     case Id:
-        return user->get_uid();
+        return user->get_user_id();
     case Name:
         return user->get_name();
     case Status:

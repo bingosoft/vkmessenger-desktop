@@ -14,7 +14,7 @@ Item {
 		anchors.left: parent.left;
 		anchors.top: parent.top;
 		anchors.margins: 5;
-		source: usr.avatarLoaded && usr.avatar != "http://vk.com/images/camera_c.gif" ? ("image://round/" + usr.uid + "|" + usr.avatar) : "../images/unknown.png";
+		source: usr.avatarLoaded && usr.avatar != "http://vk.com/images/camera_c.gif" ? ("image://round/" + usr.user_id + "|" + usr.avatar) : "../images/unknown.png";
 		width: 30;
 		height: 30;
 	}
@@ -33,7 +33,7 @@ Item {
 
 		onClicked: {
 			if (model.message.out == 0)
-				context.open("https://vk.com/id" + usr.uid);
+				context.open("https://vk.com/id" + usr.user_id);
 		}
 	}
 

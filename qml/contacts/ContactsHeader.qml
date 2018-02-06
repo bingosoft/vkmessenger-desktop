@@ -37,7 +37,7 @@ Item {
         width: 45;
         height: 45;
         anchors.verticalCenter: parent.verticalCenter;
-        source: user && user.avatarLoaded ? "image://round/" + user.uid + "|" + user.avatar : "../images/unknown.png";
+        source: user && user.avatarLoaded ? "image://round/" + user.user_id + "|" + user.avatar : "../images/unknown.png";
     }
 
     Rectangle {
@@ -49,7 +49,7 @@ Item {
         width: 1;
         color: "#85a8cf"
     }
-    
+
     Bullet {
         id: statusBullet;
         anchors.left: avatarImage.right;
@@ -82,17 +82,17 @@ Item {
         color: "#aaa";
         hoveredColor: "#eee";
         text: "Change status";
-        
+
         onClicked: {
             showStatusPanel();
         }
-        
+
         onHoveredChanged: {
             if (!hovered)
                 hideStatusPanel();
         }
     }
-    
+
     Rectangle {
         anchors.left: parent.left;
         anchors.right: parent.right;
@@ -109,7 +109,7 @@ Item {
         height: 1;
         color: "#fff";
     }
-    
+
     Rectangle {
         id: dimmer;
         anchors.top: parent.bottom;

@@ -89,9 +89,10 @@ FocusScope {
 
 
     function doOpenDialog(user) {
-        if (!header.hasDialog(user.uid))
-            createDialog(user.uid, true);
-		header.openDialog(user.uid);
+    	console.log("do open dialog " + user.user_id);
+        if (!header.hasDialog(user.user_id))
+            createDialog(user.user_id, true);
+		header.openDialog(user.user_id);
     }
 
     function onAuthorized() {
@@ -143,13 +144,13 @@ FocusScope {
 				createChat(message.chat_id, message.title, false);
             }
         } else {
-            if (!header.hasDialog(message.uid)) {
-				createDialog(message.uid, false);
+            if (!header.hasDialog(message.user_id)) {
+				createDialog(message.user_id, false);
             }
         }
 
-        var user = message.out ? usersManager.getUser(context.currentUser) : usersManager.getUser(message.uid);
-		var dialogId = isChatMessage ? message.chat_id : message.uid;
+        var user = message.out ? usersManager.getUser(context.currentUser) : usersManager.getUser(message.user_id);
+		var dialogId = isChatMessage ? message.chat_id : message.user_id;
 		var dialog = findDialog(dialogId);
 
         if (dialog)
@@ -268,8 +269,8 @@ FocusScope {
 
                 if (event[0] == EVENT.NewMessage) {
                     var message = {
-                        mid: event[1],
-                        uid: isChatMessage ? event[7].from : event[3],
+                        id: event[1],
+                        user_id: isChatMessage ? event[7].from : event[3],
                         date: event[4],
                         read_state: !(event[2] & FLAG.Unread),
                         chat_id: isChatMessage ? event[3] : -1,
