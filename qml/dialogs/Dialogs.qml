@@ -176,13 +176,13 @@ FocusScope {
     }
 
     function onMessagesReceived(data) {
-        var res = JSON.parse(data).response;
-		console.log("new " + (res.length - 1) + " messages received");
+        var res = JSON.parse(data).response.items;
+		console.log("new " + res.length + " messages received");
         console.log(data);
-        if (res.length > 1)
+        if (res.length > 0)
             dialogs.showDialog();
 
-        for (var i = res.length - 1; i > 0; --i)
+        for (var i = res.length - 1; i >= 0; --i)
             processMessage(res[i], true);
     }
 

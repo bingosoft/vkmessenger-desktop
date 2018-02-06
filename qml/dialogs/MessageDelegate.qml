@@ -229,7 +229,7 @@ Item {
 
 	function onMessageReceived(data) {
         console.log("message by id received\n" + data);
-		var msg = JSON.parse(data).response[1];
+		var msg = JSON.parse(data).response.items[0];
 		msg.body = formatText(msg.body);
 		message = msg;
         processAttachments();

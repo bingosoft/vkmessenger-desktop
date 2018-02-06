@@ -269,9 +269,9 @@ FocusScope {
 			var previousCountentY = listView.contentY;
         }
 
-		console.log("received history " + (resp.length - 1) + " messages");
+		console.log("received history " + resp.length + " messages");
 
-		for (var i = 1; i < resp.length; ++i)
+		for (var i = 0; i < resp.length; ++i)
 			insert(0, user, resp[i]);
 
         if (!scrollToEnd)
