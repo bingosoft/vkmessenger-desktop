@@ -3,7 +3,6 @@ import QtQuick 1.1
 Item {
 	property real ratio: 1.0 * sourceWidth / sourceHeight;
 	property string source;
-	property string bigSource;
 	property int sourceWidth;
 	property int sourceHeight;
     property real rowHeight;
@@ -18,7 +17,7 @@ Item {
 		fillMode: Image.PreserveAspectCrop;
 		clip: true;
 		opacity: status == Image.Ready ? 1 : 0.01;
-        source: parent.width > 604 ? parent.bigSource : parent.source;
+        source: parent.source;
 
 		Behavior on opacity {
 			animation: NumberAnimation {

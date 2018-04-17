@@ -172,7 +172,6 @@ Item {
 					delegate: PhotoAttachment {
 						borderWidth: model.needBorder ? 1 : 0;
                         source: model.source;
-                        bigSource: model.bigSource;
 						sourceWidth: model.width;
 						sourceHeight: model.height;
                         rowHeight: model.rowHeight;
@@ -248,12 +247,15 @@ Item {
 
                 if (attachment.type == "photo") {
                     var p = attachment.photo;
-                    photosModel.append({source: p.photo_1280, bigSource: p.photo_2560, width: p.width, height: p.height, rowHeight: 0, needBorder: 1});
+					var url = p.photo_2560 != undefined ? p.photo_2560 : p.photo_1280 != undefined ? p.photo_1280 : p.photo_807 != undefined ? p.photo_807 : p.photo_604;
+					url = url.replace("https://", "http://");
+					console.log("photo url - ", url)
+                    photosModel.append({source: url, width: p.width, height: p.height, rowHeight: 0, needBorder: 1});
                 }
 
                 if (attachment.type == "sticker") {
                     var p = attachment.sticker;
-                    photosModel.append({source: p.photo_256, bigSource: p.photo_512, width: 256, height: 256, rowHeight: 0, needBorder: 0});
+                    photosModel.append({source: p.photo_512, width: 256, height: 256, rowHeight: 0, needBorder: 0});
                 }
             }
 
