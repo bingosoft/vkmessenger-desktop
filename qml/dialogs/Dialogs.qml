@@ -97,7 +97,7 @@ FocusScope {
 
     function onAuthorized() {
         vkApi.makeQuery("messages.getLongPollServer", {use_ssl: 1}).completed.connect(onLongPollServerReceived);
-        vkApi.makeQuery("messages.get", {count: 200, filters: 1}).completed.connect(onMessagesReceived);
+        vkApi.makeQuery("messages.getDialogs", {count: 200, preview_length: 0, unread: 1}).completed.connect(onDialogsReceived);
     }
 
     function onDisconnected() {
@@ -175,16 +175,26 @@ FocusScope {
         longPollResponse.error.connect(longPollError);
     }
 
-    function onMessagesReceived(data) {
-        var res = JSON.parse(data).response.items;
-		console.log("new " + res.length + " messages received");
-        console.log(data);
-        if (res.length > 0)
+    function onDialogsReceived(data) {
+    	print("unread messages received " + data)
+        var items = JSON.parse(data).response.items;
+
+        if (items.length > 0)
             dialogs.showDialog();
 
-        for (var i = res.length - 1; i >= 0; --i)
-            processMessage(res[i], true);
+        for (var i = 0; i < items.length; i++) {
+        	var dialog = items[i];
+			vkApi.makeQuery("messages.getHistory", {user_id: dialog.message.user_id, count: dialog.unread}).completed.connect(onMessagesReceived);
+       }
     }
+
+	function onMessagesReceived(data) {
+		var items = JSON.parse(data).response.items;
+
+		for (var i = items.length - 1; i >= 0; i--) {
+			processMessage(items[i], true);
+		}
+	}
 
     function onIsActiveChanged(isActive) {
         if (isActive)
