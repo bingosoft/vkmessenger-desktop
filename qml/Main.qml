@@ -22,7 +22,7 @@ FocusScope {
                 console.log("has token");
                 var r = new RegExp("#access_token=([0-9a-f]+)");
                 var res = r.exec(s);
-                settings.setValue("accessToken", res[1]);
+                options.setValue("accessToken", res[1]);
                 statusPanel.currentStatus = statusPanel.statusOnline;
             }
         }
@@ -61,7 +61,7 @@ FocusScope {
             var online = 1 << (statusPanel.statusOnline + 1) | 1 << (statusPanel.statusInvisible + 1);
             if (((1 << (currentStatus + 1)) & online) > 0 && ((1 << (prevStatus + 1)) & online) == 0) { // switching from offline to online mode
                 console.log("online");
-				vkApi.accessToken = settings.value("accessToken");
+				vkApi.accessToken = options.value("accessToken");
 				vkApi.checkAuth();
             } else if (currentStatus == statusPanel.statusOffline) {
                 vkApi.disconnect();
@@ -140,7 +140,7 @@ FocusScope {
         context.openUserPage.connect(contacts.openUserPage);
         context.removeFromFriends.connect(contacts.removeFromFriends);
 
-        statusPanel.currentStatus = settings.value("status", statusPanel.statusOnline);
+        statusPanel.currentStatus = options.value("status", statusPanel.statusOnline);
     }
 
     function onUserReceived(data) {

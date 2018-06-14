@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	m->ui->declarativeView->rootContext()->setContextProperty("context", m);
 	m->ui->declarativeView->rootContext()->setContextProperty("dialogs", d);
 	m->ui->declarativeView->rootContext()->setContextProperty("usersManager", UsersManager::Get());
-	m->ui->declarativeView->rootContext()->setContextProperty("settings", Settings::shared());
+	m->ui->declarativeView->rootContext()->setContextProperty("options", Settings::shared());
 
 	d->ui->declarativeView->engine()->addImageProvider("round", imageProvider);
 	d->ui->declarativeView->rootContext()->setContextProperty("context", m);

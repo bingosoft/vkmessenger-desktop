@@ -182,10 +182,10 @@ FocusScope {
         if (items.length > 0)
             dialogs.showDialog();
 
-        for (var i = 0; i < items.length; i++) {
-        	var dialog = items[i];
+		for (var i = 0; i < items.length; i++) {
+			var dialog = items[i];
 			vkApi.makeQuery("messages.getHistory", {user_id: dialog.message.user_id, count: dialog.unread}).completed.connect(onMessagesReceived);
-       }
+		}
     }
 
 	function onMessagesReceived(data) {

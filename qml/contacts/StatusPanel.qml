@@ -17,7 +17,7 @@ ContextMenu {
     onCurrentStatusChanged: {
         statusColor = model.get(currentStatus).color;
         console.log("statusColor " + statusColor)
-        settings.setValue("status", currentStatus)
+        options.setValue("status", currentStatus)
     }
 
 	model: ListModel {
