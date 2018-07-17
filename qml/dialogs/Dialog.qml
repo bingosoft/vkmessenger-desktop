@@ -5,74 +5,75 @@ import "../js/forwardMessages.js" as ForwardMessages;
 import "../js/smiles.js" as Smiles;
 
 FocusScope {
-    id: dialogItem;
-    property int dialogId;
-    property variant user;
-    property bool printsMessage;
-    property int printsMessageUser;
-    property bool hasUnreadMessages: false;
-    property bool getHistory: true;
-    focus: true;
-    clip: true;
-    signal smilesButtonPressed();
+	 id: dialogItem;
+	 property int dialogId;
+	 property bool printsMessage;
+	 property variant user;
+	 property int printsMessageUser;
+	 property bool hasUnreadMessages: false;
+	 property bool getHistory: true;
+	 property int editingMessageId: -1;
+	 focus: true;
+	 clip: true;
+	 signal smilesButtonPressed();
 
-    ListModel {
-        id: messagesModel;
-    }
+	 ListModel {
+		id: messagesModel;
+	 }
 
-    Flickable {
-        id: listView;
-        anchors.left: parent.left;
-        anchors.right: parent.right;
+	 Flickable {
+		id: listView;
+		anchors.left: parent.left;
+		anchors.right: parent.right;
 		anchors.rightMargin: dialogId > 2000000000 ? chatUsers.width : 0;
-        anchors.top: parent.top;
-        anchors.bottom: inputArea.top;
-        contentWidth: width;
-        contentHeight: column.height;
-        property int count: messagesModel.count;
+		anchors.top: parent.top;
+		anchors.bottom: inputArea.top;
+		contentWidth: width;
+		contentHeight: column.height;
+		property int count: messagesModel.count;
 
-        MouseArea {
-            id: mouseArea;
-            anchors.fill: parent;
-            acceptedButtons: Qt.LeftButton | Qt.RightButton;
+		MouseArea {
+			id: mouseArea;
+			anchors.fill: parent;
+			acceptedButtons: Qt.LeftButton | Qt.RightButton;
 
-            onPressed: {
-                if (mouse.button == Qt.RightButton) {
-                    dialogs.showContextMenu(mouseX + 13, mouseY - listView.contentY + 85);
-                }
-            }
+			onPressed: {
+				 if (mouse.button == Qt.RightButton) {
+					dialogs.showContextMenu(mouseX + 13, mouseY - listView.contentY + 85);
+				 }
+			}
 
-            onDoubleClicked: {
-                selectCurrentMessage();
-            }
-        }
+			onDoubleClicked: {
+				 selectCurrentMessage();
+			}
+		}
 
-        Column {
-            id: column;
-            anchors.left: parent.left;
-            anchors.right: parent.right;
+		Column {
+			id: column;
+			anchors.left: parent.left;
+			anchors.right: parent.right;
 
-            Repeater {
-                id: repeater;
-                model: messagesModel;
-                delegate: MessageDelegate {
-                    printsMessage: dialogItem.printsMessage;
-                    width: listView.width;
-                }
-            }
-        }
+			Repeater {
+				id: repeater;
+				model: messagesModel;
+				delegate: MessageDelegate {
+					printsMessage: dialogItem.printsMessage;
+					width: listView.width;
+				}
+			}
+		}
 
-        onContentYChanged: {
-            if (contentY == 0)
-                loadHistory();
-        }
+		onContentYChanged: {
+				if (contentY == 0)
+					 loadHistory();
+		}
 
-        function updateContentY() {
-            var needScroll = (scrollAnimation.running ? scrollAnimation.to : listView.contentY) >= (listView.contentHeight - listView.height - 20);
-            if (needScroll)
-                scrollSmoothToEnd();
-        }
-    }
+		function updateContentY() {
+			var needScroll = (scrollAnimation.running ? scrollAnimation.to : listView.contentY) >= (listView.contentHeight - listView.height - 20);
+			if (needScroll)
+				 scrollSmoothToEnd();
+		}
+	}
 
 	ListView {
 		id: chatUsers;
@@ -101,117 +102,137 @@ FocusScope {
 		}
 	}
 
-    ScrollBar {
-        view: listView;
-    }
+	ScrollBar {
+		view: listView;
+	}
 
-    DialogEdit {
-        id: inputArea;
-        anchors.left: parent.left;
-        anchors.right: parent.right;
-        anchors.bottom: parent.bottom;
-        focus: true;
+	DialogEdit {
+		id: inputArea;
+		anchors.left: parent.left;
+		anchors.right: parent.right;
+		anchors.bottom: parent.bottom;
+		focus: true;
 
-        Rectangle {
-            anchors.left: parent.left;
-            anchors.right: parent.right;
-            anchors.top: parent.top;
-            height: 1;
-            color: "#fff";
-        }
+		Rectangle {
+			anchors.left: parent.left;
+			anchors.right: parent.right;
+			anchors.top: parent.top;
+			height: 1;
+			color: "#fff";
+		}
 
-        Rectangle {
-            anchors.left: parent.left;
-            anchors.right: parent.right;
-            anchors.top: parent.top;
-            anchors.topMargin: 1;
-            height: 1;
-            color: "#ddd";
-        }
+		Rectangle {
+			anchors.left: parent.left;
+			anchors.right: parent.right;
+			anchors.top: parent.top;
+			anchors.topMargin: 1;
+			height: 1;
+			color: "#ddd";
+		}
 
-        onSendMessage: {
-            dialogItem.sendMessage(text, forwardMessages);
-			console.log("sending a message \"" + text + "\"");
-        }
+		onSendMessage: {
+			if (editingMessageId != -1) {
+				dialogItem.editMessage(text);
+				console.log("editing a message \"" + text + "\"");
+			} else {
+				dialogItem.sendMessage(text, forwardMessages);
+				console.log("sending a message \"" + text + "\"");
+			}
+		}
 
-        onClearForwardMessages: {
-            ForwardMessages.clearSelectedMessages();
-        }
+		onClearForwardMessages: {
+				ForwardMessages.clearSelectedMessages();
+		}
 
-        onSmilesButtonPressed: {
-            dialogItem.smilesButtonPressed();
-        }
+		onSmilesButtonPressed: {
+				dialogItem.smilesButtonPressed();
+		}
 
-        onHeightChanged: listView.updateContentY();
-    }
+		onEditMessageRequested: {
+			var i = messagesModel.count - 1;
 
-    Rectangle {
-        anchors.bottom: inputArea.top;
-        anchors.left: parent.left;
-        anchors.right: parent.right;
-        height: 15;
-        opacity: listView.contentY >= (listView.contentHeight - listView.height - 10) ? 0 : 1;
+			while (i >= 0) {
+				var msg = messagesModel.get(i);
 
-        gradient: Gradient {
-            GradientStop {
-                position: 1.00;
-                color: "#d0d0d0";
-            }
-            GradientStop {
-                position: 0.00;
-                color: "#00ffffff";
-            }
-        }
+				if (msg.message.out == 1) {
+ 				 	inputArea.setText(msg.message.body);
+ 				 	editingMessageId = msg.message.id;
+ 				 	break;
+				}
+				i--;
+			}
+		}
 
-        Behavior on opacity {
-            animation: NumberAnimation {
-                duration: 300;
-            }
-        }
-    }
+		onHeightChanged: listView.updateContentY();
+	 }
 
-    Timer {
-        id: printNotificationTimeout;
-        interval: 10000;
-    }
+	 Rectangle {
+		anchors.bottom: inputArea.top;
+		anchors.left: parent.left;
+		anchors.right: parent.right;
+		height: 15;
+		opacity: listView.contentY >= (listView.contentHeight - listView.height - 10) ? 0 : 1;
 
-    Timer {
-        id: userPrintsNotificationTimeout;
-        interval: 5000;
+		gradient: Gradient {
+				GradientStop {
+					 position: 1.00;
+					 color: "#d0d0d0";
+				}
+				GradientStop {
+					 position: 0.00;
+					 color: "#00ffffff";
+				}
+		}
 
-        onTriggered: {
-            userPrintsMessage(false);
-        }
-    }
+		Behavior on opacity {
+				animation: NumberAnimation {
+					 duration: 300;
+				}
+		}
+	 }
 
-    Timer {
-        id: postScrollTimer;
-        interval: 200;
+	 Timer {
+		id: printNotificationTimeout;
+		interval: 10000;
+	 }
 
-        onTriggered: {
-            dialogItem.scrollSmoothToEnd();
-        }
-    }
+	 Timer {
+		id: userPrintsNotificationTimeout;
+		interval: 5000;
 
-    NumberAnimation {
-        id: scrollAnimation;
-        target: listView;
-        property: "contentY";
-        duration: 400;
-        easing.type: Easing.InOutCirc
-    }
+		onTriggered: {
+				userPrintsMessage(false);
+		}
+	 }
 
-    Behavior on opacity {
-        animation: NumberAnimation {
-            duration: 300;
-        }
-    }
+	 Timer {
+		id: postScrollTimer;
+		interval: 200;
 
-    Component.onCompleted: {
-        if (getHistory)
-            vkApi.makeQuery("messages.getHistory", {user_id: dialogId, count: 25}).completed.connect(function(data) { onHistoryReceived(data, true); });
+		onTriggered: {
+				dialogItem.scrollSmoothToEnd();
+		}
+	 }
 
-        ForwardMessages.addObserver(inputArea, selectedMessagesCountChanged);
+	 NumberAnimation {
+		id: scrollAnimation;
+		target: listView;
+		property: "contentY";
+		duration: 400;
+		easing.type: Easing.InOutCirc
+	 }
+
+	 Behavior on opacity {
+		animation: NumberAnimation {
+				duration: 300;
+		}
+	 }
+
+	 Component.onCompleted: {
+		if (getHistory)
+				vkApi.makeQuery("messages.getHistory", {user_id: dialogId, count: 25}).completed.connect(function(data) { onHistoryReceived(data, true); });
+
+		ForwardMessages.addObserver(inputArea, selectedMessagesCountChanged);
 		usersManager.chatDataChanged.connect(updateChat);
 		usersManager.userDataChanged.connect(updateUser);
 
@@ -220,178 +241,190 @@ FocusScope {
 			if (chat.loaded)
 				updateChat(dialogId);
 		}
-    }
+	 }
 
-    Component.onDestruction: {
-        ForwardMessages.removeObserver(inputArea, dialogId);
+	 Component.onDestruction: {
+		ForwardMessages.removeObserver(inputArea, dialogId);
 		usersManager.chatDataChanged.disconnect(updateChat);
 		usersManager.userDataChanged.disconnect(updateUser);
-    }
+	 }
 
-    function append(user, message, checkExisting) {
-        if (checkExisting) {
-            for (var i = 0; i < messagesModel.count; ++i)
-                if (messagesModel.get(i).message.id == message.id)
-                    return;
-        }
-        insert(messagesModel.count, user, message);
-    }
+	 function append(user, message, checkExisting) {
+		if (checkExisting) {
+			for (var i = 0; i < messagesModel.count; ++i)
+				if (messagesModel.get(i).message.id == message.id) {
+				messagesModel.setProperty(i, "message", message);
+//				repeater.itemAt(i).updateMessage(message);
+				print("update text of message " + message.id + " with " + message.body)
+				return;
+			}
+		}
+		insert(messagesModel.count, user, message);
+	}
 
 	function formatText(text) {
-        var re = new RegExp("http([s]?):\\/\\/([=\\?\\%\\#\\;\\&\\w\\.\\/_-]+)", "g");
+		var re = new RegExp("http([s]?):\\/\\/([=\\?\\%\\#\\;\\&\\w\\.\\/_-]+)", "g");
 		text = text.replace(re, "<a href='http$1://$2'>http$1://$2</a>");
 		text = Smiles.detectSmilies(text);
 		return text;
 	}
 
-    function insert(index, user, message) {
-		for (var i = 0; i < messagesModel.count; ++i)
-			if (messagesModel.get(i).message.id == message.id)
+	 function insert(index, user, message) {
+		for (var i = 0; i < messagesModel.count; ++i) {
+			if (messagesModel.get(i).message.id == message.id) {
 				return;
+			}
+		}
 
-        printsMessage = false;
-        var needScroll = (scrollAnimation.running ? scrollAnimation.to : listView.contentY) >= (listView.contentHeight - listView.height - 10);
+		printsMessage = false;
+		var needScroll = (scrollAnimation.running ? scrollAnimation.to : listView.contentY) >= (listView.contentHeight - listView.height - 10);
 		message.body = formatText(message.body);
-        messagesModel.insert(index, {user: user, message: message, read: message.read_state, selected: false});
-//        console.log(" === DUMPING MESSAGE === \n\n" + message.body + "\n\n");
+		messagesModel.insert(index, {user: user, message: message, read: message.read_state, selected: false});
+//		console.log(" === DUMPING MESSAGE === \n\n" + message.body + "\n\n");
 
-        if (needScroll)
-            postScrollTimer.restart();
+		if (needScroll)
+			postScrollTimer.restart();
 
-        hasUnreadMessages = true;
-    }
+		hasUnreadMessages = true;
+	 }
 
-    function onHistoryReceived(data, scrollToEnd) {
+	 function onHistoryReceived(data, scrollToEnd) {
 		console.log(data);
-        var resp = JSON.parse(data).response.items;
-        if (!scrollToEnd) {
+		var resp = JSON.parse(data).response.items;
+		if (!scrollToEnd) {
 			var previousHeight = listView.contentHeight;
 			var previousCountentY = listView.contentY;
-        }
+		}
 
 		console.log("received history " + resp.length + " messages");
 
 		for (var i = 0; i < resp.length; ++i)
 			insert(0, user, resp[i]);
 
-        if (!scrollToEnd)
+		if (!scrollToEnd)
 			listView.contentY = previousCountentY + listView.contentHeight - previousHeight;
-    }
+	 }
 
-    function sendMessage(text, forwardMessages) {
-        var date = new Date();
-        var forwardedMessages = "";
-        if (forwardMessages) {
-            for (var i = 0; i < ForwardMessages.forwardMessages.length; ++i)
-                forwardedMessages += (forwardedMessages == "" ? "" : ",") + ForwardMessages.forwardMessages[i].id;
-            ForwardMessages.clearSelectedMessages();
-        }
-        if (dialogId < 2000000000) {
+	 function sendMessage(text, forwardMessages) {
+		var date = new Date();
+		var forwardedMessages = "";
+		if (forwardMessages) {
+				for (var i = 0; i < ForwardMessages.forwardMessages.length; ++i)
+					 forwardedMessages += (forwardedMessages == "" ? "" : ",") + ForwardMessages.forwardMessages[i].id;
+				ForwardMessages.clearSelectedMessages();
+		}
+		if (dialogId < 2000000000) {
 			vkApi.makeQuery("messages.send", {user_id: dialogId, message: text, guser_id: date.getTime(), forward_messages: forwardedMessages});
-        } else {
-            console.log("sending message to a chat");
+		} else {
+				console.log("sending message to a chat");
 			vkApi.makeQuery("messages.send", {chat_id: dialogId - 2000000000, message: text, guser_id: date.getTime(), forward_messages: forwardedMessages});
-        }
-    }
+		}
+	 }
 
-    function userPrintsMessage(isPrints) {
-        if (isPrints)
-            userPrintsNotificationTimeout.restart();
+	 function editMessage(text) {
+	 	print("edit a message " + editingMessageId + " with text " + text)
+		vkApi.makeQuery("messages.edit", {peer_id: dialogId, message: text, message_id: editingMessageId, keep_forward_messages: 1, keep_snippets: 1});
+		editingMessageId = -1;
+	 }
 
-        printsMessage = isPrints;
-    }
+	 function userPrintsMessage(isPrints) {
+		if (isPrints)
+				userPrintsNotificationTimeout.restart();
 
-    function getMessageAtMouse() {
-        var totalHeight = 0;
+		printsMessage = isPrints;
+	 }
 
-        for (var i = 0; i < messagesModel.count; ++i) {
-            totalHeight += repeater.itemAt(i).height;
-            if (totalHeight >= mouseArea.mouseY)
-                return i;
-        }
+	 function getMessageAtMouse() {
+		var totalHeight = 0;
 
-        return -1;
-    }
+		for (var i = 0; i < messagesModel.count; ++i) {
+				totalHeight += repeater.itemAt(i).height;
+				if (totalHeight >= mouseArea.mouseY)
+					 return i;
+		}
 
-    function setMessageRead(id, read) {
-        for (var i = messagesModel.count - 1; i >= 0; --i) {
-            if (messagesModel.get(i).message.id == id) {
-                messagesModel.setProperty(i, "read", read);
-                break;
-            }
-        }
-    }
+		return -1;
+	 }
 
-    function scrollSmoothToEnd() {
-        if ((listView.contentHeight - listView.height) <= 0)
-            return;
-        scrollAnimation.to = listView.contentHeight - listView.height;
-        scrollAnimation.restart();
-    }
+	 function setMessageRead(id, read) {
+		for (var i = messagesModel.count - 1; i >= 0; --i) {
+			if (messagesModel.get(i).message.id == id) {
+				 messagesModel.setProperty(i, "read", read);
+				 break;
+			}
+		}
+	 }
 
-    function selectCurrentMessage() {
-        var i = getMessageAtMouse();
+	 function scrollSmoothToEnd() {
+		if ((listView.contentHeight - listView.height) <= 0)
+				return;
+		scrollAnimation.to = listView.contentHeight - listView.height;
+		scrollAnimation.restart();
+	 }
+
+	 function selectCurrentMessage() {
+		var i = getMessageAtMouse();
 		var message = messagesModel.get(i);
 		messagesModel.setProperty(i, "selected", !message.selected);
-        ForwardMessages.toggleSelectedMessage(message.message.id, dialogId);
+		ForwardMessages.toggleSelectedMessage(message.message.id, dialogId);
 		console.log("selecting message " + message.message.id);
-    }
+	 }
 
-    function convertToRu() {
-        var ind = getMessageAtMouse();
+	 function convertToRu() {
+		var ind = getMessageAtMouse();
 		var message = messagesModel.get(ind);
-        var s = "";
-        var tr = {"from": "qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>?",
-        			"to": "йцукенгшщзхъфывапролджэячсмитьбю.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,"};
-        for (var i = 0; i < message.message.body.length; ++i) {
+		var s = "";
+		var tr = {"from": "qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>?",
+					"to": "йцукенгшщзхъфывапролджэячсмитьбю.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,"};
+		for (var i = 0; i < message.message.body.length; ++i) {
 			var pos = tr.from.indexOf(message.message.body[i]);
 
-            if (pos === -1) {
-                s += message.message.body[i];
-            } else {
+				if (pos === -1) {
+					 s += message.message.body[i];
+				} else {
 				s += tr.to[pos];
-            }
-        }
+				}
+		}
 		console.log(s);
 		messagesModel.set(ind, {message: {body: s}});
-    }
+	 }
 
-    function copyToClipboard() {
-        var ind = getMessageAtMouse();
+	 function copyToClipboard() {
+		var ind = getMessageAtMouse();
 		var message = messagesModel.get(ind);
-        context.copyToClipboard(message.message.body);
-    }
+		context.copyToClipboard(message.message.body);
+	 }
 
-    function selectedMessagesCountChanged(inputArea) {
-        inputArea.forwardMessagesCount = ForwardMessages.forwardMessages.length;
+	 function selectedMessagesCountChanged(inputArea) {
+		inputArea.forwardMessagesCount = ForwardMessages.forwardMessages.length;
 
-        if (ForwardMessages.forwardMessages.length == 0) {
-            for (var i = 0; i < messagesModel.count; ++i) {
-                var message = messagesModel.get(i);
-                messagesModel.setProperty(i, "selected", false);
-            }
-        }
-    }
+		if (ForwardMessages.forwardMessages.length == 0) {
+			for (var i = 0; i < messagesModel.count; ++i) {
+				 var message = messagesModel.get(i);
+				 messagesModel.setProperty(i, "selected", false);
+			}
+		}
+	 }
 
-    function loadHistory() {
-        console.log("loading hist");
-        var messagesCount = 100;
-        if (messagesModel.count > 0)
-            vkApi.makeQuery("messages.getHistory", {user_id: dialogId, count: messagesCount, offset: -(messagesCount + 1), start_message_id: messagesModel.get(0).message.id}).completed.connect(function(data) { onHistoryReceived(data, false); });
-    }
+	 function loadHistory() {
+		console.log("loading hist");
+		var messagesCount = 100;
+		if (messagesModel.count > 0)
+				vkApi.makeQuery("messages.getHistory", {user_id: dialogId, count: messagesCount, offset: -(messagesCount + 1), start_message_id: messagesModel.get(0).message.id}).completed.connect(function(data) { onHistoryReceived(data, false); });
+	 }
 
-    function updateUser(user_id) {
-        for (var i = 0; i < chatUsersModel.count; ++i) {
-            var item = chatUsersModel.get(i);
-            if (item.user_id === user_id) {
-				console.log("updating a user in chat");
-                var user = usersManager.getUser(user_id);
-                chatUsersModel.set(i, user);
-            }
-        }
-    }
+	 function updateUser(user_id) {
+		for (var i = 0; i < chatUsersModel.count; ++i) {
+			var item = chatUsersModel.get(i);
+			if (item.user_id === user_id) {
+			console.log("updating a user in chat");
+				 var user = usersManager.getUser(user_id);
+				 chatUsersModel.set(i, user);
+			}
+		}
+	 }
 
-    function updateChat(chatId) {
+	 function updateChat(chatId) {
 		if (dialogId == chatId) {
 			console.log("updating a chat");
 			var chat = usersManager.getChat(chatId);
@@ -404,7 +437,7 @@ FocusScope {
 				chatUsersModel.append(usersManager.getUser(chat.users[i]));
 			}
 		}
-    }
+	 }
 
-    function appendText(text) { inputArea.appendText(text); }
+	 function appendText(text) { inputArea.appendText(text); }
 }
