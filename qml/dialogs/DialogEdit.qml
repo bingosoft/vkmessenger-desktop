@@ -12,7 +12,9 @@ FocusScope {
 	signal clearForwardMessages();
 	signal smilesButtonPressed();
 	signal editMessageRequested();
+	signal editMessageCancelled();
 	property int forwardMessagesCount;
+	property bool isEditingMessage: false;
 
 	Rectangle {
 		anchors.fill: parent;
@@ -155,6 +157,18 @@ FocusScope {
 				 Keys.onUpPressed: {
 				 	if (text.length == 0) {
 				 		editMessageRequested();
+				 		isEditingMessage = true;
+					} else {
+						event.accepted = false;
+					}
+				 }
+
+				 Keys.onDownPressed: {
+				 	if (isEditingMessage) {
+				 		editMessageCancelled();
+				 		isEditingMessage = false;
+					} else {
+						event.accepted = false;
 					}
 				 }
 

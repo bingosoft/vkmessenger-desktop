@@ -163,6 +163,11 @@ FocusScope {
 			}
 		}
 
+		onEditMessageCancelled: {
+			editingMessageId = -1;
+		 	inputArea.setText("");
+		}
+
 		onHeightChanged: listView.updateContentY();
 	 }
 
@@ -254,7 +259,7 @@ FocusScope {
 			for (var i = 0; i < messagesModel.count; ++i)
 				if (messagesModel.get(i).message.id == message.id) {
 				messagesModel.setProperty(i, "message", message);
-//				repeater.itemAt(i).updateMessage(message);
+				repeater.itemAt(i).updateMessage(message);
 				print("update text of message " + message.id + " with " + message.body)
 				return;
 			}
