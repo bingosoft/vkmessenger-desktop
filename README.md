@@ -15,5 +15,5 @@ An alternative cross platform desktop messenger for social network VK.COM in ICQ
 
 **VkMessenger** was started at September, 2013 as replacement to deprecated VK XMPP gate support. The company management of Mail.ru Group has provided no official client for desktop for 3.5 years. So I decided to create an alternative solution, because it's very uncomfortable to write messages to my friends in a browser or using mobile app
 
-Nowadays you can use the the official solution that provided by VK.COM https://vk.com/messenger. So that project no longer needed and not supported. But I use this program every day, so it's big probability that it will be in stable state
+Nowadays you can use the official solution that provided by VK.COM https://vk.com/messenger. So that project no longer needed and not supported. But I use this program every day, so it's big probability that it will be in stable state
 
