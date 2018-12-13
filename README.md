@@ -6,12 +6,11 @@ An alternative cross platform desktop messenger for social network VK.COM in ICQ
 > Official page - http://bingosoft.info/programs/vkmessenger.html
 > VK Group - https://vk.com/vkmessenger.desktop
 
-# Screenshots
+## Screenshots
 
-![Диалоги](http://bingosoft.info/images/vkmessenger2.png)
-![Список пользователей](http://bingosoft.info/images/vkmessenger1.png)
+![Диалоги](http://bingosoft.info/images/vkmessenger2.png =250x) { width=48% } ![Список пользователей](http://bingosoft.info/images/vkmessenger1.png) { width=48% }
 
-History
+## History
 ----------
 
 **VkMessenger** was started at September, 2013 as replacement to deprecated VK XMPP gate support. The company management of Mail.ru Group has provided no official client for desktop for 3.5 years. So I decided to create an alternative solution, because it's very uncomfortable to write messages to my friends in a browser or using mobile app
