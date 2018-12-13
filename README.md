@@ -8,7 +8,7 @@ An alternative cross platform desktop messenger for social network VK.COM in ICQ
 
 ## Screenshots
 
-![Диалоги](http://bingosoft.info/images/vkmessenger2.png =250x) { width=48% }
+![Диалоги](http://bingosoft.info/images/vkmessenger2.png) { width=48% } 
 ![Список пользователей](http://bingosoft.info/images/vkmessenger1.png) { width=48% }
 
 ## History
